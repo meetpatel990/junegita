@@ -1,0 +1,7 @@
+import type { Config } from 'next'
+
+const config: Config = {
+  extends: ['next/core-web-vitals', 'next/typescript'],
+}
+
+module.exports = config
