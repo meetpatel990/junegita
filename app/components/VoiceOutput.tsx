@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { speakText, stopSpeaking, isSpeaking } from '@/lib/voice-utils'
+import { speakText, stopSpeaking } from '@/lib/voice-utils'
 
 interface VoiceOutputProps {
   text: string

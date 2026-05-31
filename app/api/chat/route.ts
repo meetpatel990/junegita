@@ -1,6 +1,4 @@
-import { generateText } from 'ai'
-import { openai } from '@ai-sdk/openai'
-import { KRISHNA_SYSTEM_PROMPT } from '@/lib/krishna-prompt'
+import { generateKrishnaResponse } from '@/lib/gita-knowledge-base'
 
 export async function POST(req: Request) {
   try {
@@ -13,22 +11,19 @@ export async function POST(req: Request) {
       })
     }
 
-    // Transform messages to AI SDK format
-    const formattedMessages = messages.map((msg: any) => ({
-      role: msg.role,
-      content: msg.content,
-    }))
+    // Get the last user message
+    const lastMessage = messages[messages.length - 1]
+    if (!lastMessage || lastMessage.role !== 'user') {
+      return new Response(JSON.stringify({ error: 'No user message found' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
 
-    // Generate response with Krishna system prompt
-    const { text } = await generateText({
-      model: openai('gpt-4o-mini'),
-      system: KRISHNA_SYSTEM_PROMPT,
-      messages: formattedMessages,
-      temperature: 0.7,
-      maxTokens: 1024,
-    })
+    // Generate Krishna's response from the Gita knowledge base
+    const response = generateKrishnaResponse(lastMessage.content)
 
-    return new Response(JSON.stringify({ response: text }), {
+    return new Response(JSON.stringify({ response }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     })

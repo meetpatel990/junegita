@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import { startVoiceRecognition, stopVoiceRecognition } from '@/lib/voice-utils'
 
 interface VoiceInputProps {
@@ -11,7 +11,7 @@ interface VoiceInputProps {
 export default function VoiceInput({ onTranscript, disabled = false }: VoiceInputProps) {
   const [isListening, setIsListening] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const recognitionRef = useRef<SpeechRecognition | null>(null)
+  const recognitionRef = useRef<any>(null)
 
   const handleStartListening = () => {
     setError(null)

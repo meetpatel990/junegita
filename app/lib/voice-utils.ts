@@ -1,5 +1,12 @@
 // Voice utilities for speech recognition and text-to-speech
 
+declare global {
+  interface Window {
+    webkitSpeechRecognition: any
+    SpeechRecognition: any
+  }
+}
+
 export interface VoiceOptions {
   rate?: number
   pitch?: number
@@ -9,7 +16,7 @@ export interface VoiceOptions {
 export const startVoiceRecognition = (
   onResult: (transcript: string) => void,
   onError: (error: string) => void
-): SpeechRecognition | null => {
+): any => {
   const SpeechRecognition = window.webkitSpeechRecognition || (window as any).SpeechRecognition
 
   if (!SpeechRecognition) {
@@ -26,7 +33,7 @@ export const startVoiceRecognition = (
     console.log('[v0] Voice recognition started')
   }
 
-  recognition.onresult = (event: SpeechRecognitionEvent) => {
+  recognition.onresult = (event: any) => {
     let transcript = ''
     for (let i = event.resultIndex; i < event.results.length; i++) {
       transcript += event.results[i][0].transcript
@@ -34,7 +41,7 @@ export const startVoiceRecognition = (
     onResult(transcript)
   }
 
-  recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+  recognition.onerror = (event: any) => {
     console.error('[v0] Speech recognition error:', event.error)
     onError(`Voice error: ${event.error}`)
   }
@@ -43,7 +50,7 @@ export const startVoiceRecognition = (
   return recognition
 }
 
-export const stopVoiceRecognition = (recognition: SpeechRecognition | null) => {
+export const stopVoiceRecognition = (recognition: any) => {
   if (recognition) {
     recognition.stop()
   }
@@ -86,11 +93,4 @@ export const stopSpeaking = () => {
 
 export const isSpeaking = (): boolean => {
   return window.speechSynthesis?.speaking || false
-}
-
-declare global {
-  interface Window {
-    webkitSpeechRecognition: any
-    SpeechRecognition: any
-  }
 }

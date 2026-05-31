@@ -6,17 +6,22 @@ import VoiceOutput from './VoiceOutput'
 import { Message, INITIAL_MESSAGE } from '@/lib/krishna-prompt'
 
 export default function ChatInterface() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      role: 'assistant',
-      content: INITIAL_MESSAGE,
-      timestamp: new Date(),
-    },
-  ])
+  const [messages, setMessages] = useState<Message[]>([])
   const [currentResponse, setCurrentResponse] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  // Initialize with Krishna's greeting on mount
+  useEffect(() => {
+    setMessages([
+      {
+        role: 'assistant',
+        content: INITIAL_MESSAGE,
+        timestamp: new Date(),
+      },
+    ])
+  }, [])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
