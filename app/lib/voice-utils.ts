@@ -43,7 +43,18 @@ export const startVoiceRecognition = (
 
   recognition.onerror = (event: any) => {
     console.error('[v0] Speech recognition error:', event.error)
-    onError(`Voice error: ${event.error}`)
+    let errorMessage = `Voice error: ${event.error}`
+    
+    // Provide user-friendly error messages
+    if (event.error === 'not-allowed') {
+      errorMessage = 'Microphone access denied. Please check your browser permissions and reload the page.'
+    } else if (event.error === 'network') {
+      errorMessage = 'Network error. Please check your connection.'
+    } else if (event.error === 'no-speech') {
+      errorMessage = 'No speech detected. Please try again.'
+    }
+    
+    onError(errorMessage)
   }
 
   recognition.start()
@@ -93,4 +104,14 @@ export const stopSpeaking = () => {
 
 export const isSpeaking = (): boolean => {
   return window.speechSynthesis?.speaking || false
+}
+
+export const requestMicrophonePermission = async (): Promise<boolean> => {
+  try {
+    await navigator.mediaDevices.getUserMedia({ audio: true })
+    return true
+  } catch (err) {
+    console.error('[v0] Microphone permission denied:', err)
+    return false
+  }
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import { startVoiceRecognition, stopVoiceRecognition } from '@/lib/voice-utils'
+import { startVoiceRecognition, stopVoiceRecognition, requestMicrophonePermission } from '@/lib/voice-utils'
 
 interface VoiceInputProps {
   onTranscript: (text: string) => void
@@ -13,8 +13,16 @@ export default function VoiceInput({ onTranscript, disabled = false }: VoiceInpu
   const [error, setError] = useState<string | null>(null)
   const recognitionRef = useRef<any>(null)
 
-  const handleStartListening = () => {
+  const handleStartListening = async () => {
     setError(null)
+    
+    // Request microphone permission first
+    const hasPermission = await requestMicrophonePermission()
+    if (!hasPermission) {
+      setError('Please allow microphone access in your browser settings and try again.')
+      return
+    }
+    
     setIsListening(true)
 
     const recognition = startVoiceRecognition(
