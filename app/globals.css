@@ -27,6 +27,10 @@ body {
     animation: fadeIn 0.3s ease-in;
   }
 
+  .animate-fadeIn {
+    animation: fadeIn 0.3s ease-in;
+  }
+
   .pulse-soft {
     animation: pulseSoft 2s ease-in-out infinite;
   }
