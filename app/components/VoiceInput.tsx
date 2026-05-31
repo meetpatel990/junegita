@@ -55,7 +55,7 @@ export default function VoiceInput({ onTranscript, disabled = false, language = 
       <button
         onClick={isListening ? handleStopListening : handleStartListening}
         disabled={disabled}
-        className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${
+        className={`px-6 py-3.5 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 text-sm shadow-sm ${
           isListening
             ? 'bg-red-500 hover:bg-red-600 text-white pulse-soft'
             : 'bg-saffron-500 hover:bg-saffron-600 text-white'
@@ -72,7 +72,7 @@ export default function VoiceInput({ onTranscript, disabled = false, language = 
       </button>
 
       {error && (
-        <div className="text-red-700 text-sm bg-red-50 px-4 py-2 rounded border border-red-200">
+        <div className="text-red-700 text-sm bg-red-50 px-4 py-3 rounded-lg border border-red-200 font-medium">
           {error}
         </div>
       )}
