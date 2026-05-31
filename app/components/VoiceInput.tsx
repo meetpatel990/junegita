@@ -2,13 +2,15 @@
 
 import { useState, useRef } from 'react'
 import { startVoiceRecognition, stopVoiceRecognition, requestMicrophonePermission } from '@/lib/voice-utils'
+import { Language, t } from '@/lib/translations'
 
 interface VoiceInputProps {
   onTranscript: (text: string) => void
   disabled?: boolean
+  language?: Language
 }
 
-export default function VoiceInput({ onTranscript, disabled = false }: VoiceInputProps) {
+export default function VoiceInput({ onTranscript, disabled = false, language = 'English' }: VoiceInputProps) {
   const [isListening, setIsListening] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const recognitionRef = useRef<any>(null)
@@ -55,8 +57,8 @@ export default function VoiceInput({ onTranscript, disabled = false }: VoiceInpu
         disabled={disabled}
         className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2 ${
           isListening
-            ? 'bg-red-600 hover:bg-red-700 text-white pulse-soft'
-            : 'bg-accent-gold hover:bg-yellow-500 text-black'
+            ? 'bg-red-500 hover:bg-red-600 text-white pulse-soft'
+            : 'bg-saffron-500 hover:bg-saffron-600 text-white'
         } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
       >
         <svg
@@ -66,11 +68,11 @@ export default function VoiceInput({ onTranscript, disabled = false }: VoiceInpu
         >
           <path d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 16a1 1 0 11-2 0 5 5 0 10-10 0 1 1 0 01-2 0 7.001 7.001 0 016-10.93V4a1 1 0 012 0v10.93z" />
         </svg>
-        {isListening ? 'Listening... Click to Stop' : 'Speak to Krishna'}
+        {isListening ? t(language, 'listening') : t(language, 'speak-button')}
       </button>
 
       {error && (
-        <div className="text-red-400 text-sm bg-red-900 bg-opacity-30 px-4 py-2 rounded">
+        <div className="text-red-700 text-sm bg-red-50 px-4 py-2 rounded border border-red-200">
           {error}
         </div>
       )}

@@ -1,6 +1,6 @@
 export async function POST(req: Request) {
   try {
-    const { messages } = await req.json()
+    const { messages, language } = await req.json()
 
     if (!messages || !Array.isArray(messages)) {
       return new Response(JSON.stringify({ error: 'Invalid messages format' }), {
@@ -18,23 +18,32 @@ export async function POST(req: Request) {
       })
     }
 
-    // Call the external Python backend
-    console.log('[v0] Calling external API with message:', lastMessage.content)
+    // Call the external Python backend with language
+    console.log('[v0] Calling external API with message:', lastMessage.content, 'language:', language)
     const externalResponse = await fetch('https://bhagwatgita-2026.onrender.com/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: lastMessage.content }),
+      body: JSON.stringify({ 
+        message: lastMessage.content,
+        language: language || 'English'
+      }),
     })
 
     if (!externalResponse.ok) {
       const errorText = await externalResponse.text()
       console.error('[v0] External API error:', externalResponse.status, errorText)
       
-      // Fall back to local knowledge base if external API fails
-      console.log('[v0] Falling back to local knowledge base')
+      // Fall back with appropriate language message
+      const fallbackMessages: Record<string, string> = {
+        English: 'I\'m experiencing connection issues with the main server. Please try again in a moment.',
+        Hindi: 'मुझे मुख्य सर्वर के साथ कनेक्शन समस्या का सामना कर रहा हूं। कृपया क्षण में फिर से प्रयास करें।',
+        Gujarati: 'મને મુખ્ય સર્વર સાથે કનેક્શન સમસ્યાનો સામનો કરી રહ્યો છું. કૃપયા ક્ષણમાં ફરી પ્રયાસ કરો.',
+      }
+      
+      console.log('[v0] Falling back with language-specific message')
       return new Response(
         JSON.stringify({
-          response: `I'm experiencing connection issues with the main server. Please try again in a moment. [Error: ${externalResponse.status}]`,
+          response: fallbackMessages[language as string] || fallbackMessages['English'],
         }),
         {
           status: 200,

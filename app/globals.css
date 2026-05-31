@@ -2,6 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Saffron Color Palette */
+  --saffron-50: #FFFBF0;
+  --saffron-100: #FEF3C7;
+  --saffron-200: #FDE68A;
+  --saffron-300: #F6B84B;
+  --saffron-400: #F59E0B;
+  --saffron-500: #D97706;
+  --saffron-600: #B45309;
+  --saffron-700: #92400E;
+
+  /* Slate Color Palette */
+  --slate-50: #F8FAFC;
+  --slate-100: #F1F5F9;
+  --slate-200: #E2E8F0;
+  --slate-300: #CBD5E1;
+  --slate-400: #94A3B8;
+  --slate-500: #64748B;
+  --slate-600: #475569;
+  --slate-700: #334155;
+  --slate-800: #1E293B;
+  --slate-900: #0F172A;
+
+  /* Background */
+  --bg: #FFFFFF;
+  --bg-side: #F9F9F9;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -9,16 +38,36 @@
 }
 
 html {
-  background-color: theme('colors.background');
-  color: theme('colors.foreground');
+  background-color: var(--bg);
+  color: var(--slate-800);
+  scroll-behavior: smooth;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg);
+  color: var(--slate-800);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--slate-300);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--slate-400);
 }
 
 /* Smooth fade transitions */
@@ -34,14 +83,36 @@ body {
   .pulse-soft {
     animation: pulseSoft 2s ease-in-out infinite;
   }
+
+  .lang-select {
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--saffron-200);
+    background: var(--saffron-50);
+    color: var(--saffron-700);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s var(--ease);
+    margin-right: 8px;
+  }
+
+  .lang-select:hover,
+  .lang-select:focus {
+    border-color: var(--saffron-400);
+    background: var(--saffron-100);
+    outline: none;
+  }
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -51,6 +122,6 @@ body {
     opacity: 1;
   }
   50% {
-    opacity: 0.7;
+    opacity: 0.5;
   }
 }

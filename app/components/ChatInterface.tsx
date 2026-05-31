@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import VoiceInput from './VoiceInput'
 import { Message, INITIAL_MESSAGE } from '@/lib/krishna-prompt'
 import { speakText, stopSpeaking } from '@/lib/voice-utils'
+import { Language, LANGUAGES, t } from '@/lib/translations'
 
 interface ChatSession {
   id: string
@@ -13,6 +14,7 @@ interface ChatSession {
 }
 
 export default function ChatInterface() {
+  const [language, setLanguage] = useState<Language>('English')
   const [chatSessions, setChatSessions] = useState<ChatSession[]>([])
   const [currentChatId, setCurrentChatId] = useState<string | null>(null)
   const [inputValue, setInputValue] = useState('')
@@ -119,11 +121,11 @@ export default function ChatInterface() {
     setIsLoading(true)
 
     try {
-      // Call the chat API
+      // Call the chat API with language
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: updatedChat.messages }),
+        body: JSON.stringify({ messages: updatedChat.messages, language }),
       })
 
       if (!response.ok) {
@@ -162,18 +164,18 @@ export default function ChatInterface() {
   }
 
   return (
-    <div className="flex h-screen bg-background text-foreground">
+    <div className="flex h-screen bg-white text-slate-800">
       {/* SIDEBAR */}
-      <div className="w-64 bg-slate-950 border-r border-accent-gold border-opacity-30 flex flex-col">
+      <div className="w-64 bg-slate-50 border-r border-slate-200 flex flex-col">
         {/* Logo */}
-        <div className="p-4 border-b border-accent-gold border-opacity-30">
+        <div className="p-4 border-b border-slate-200">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-accent-gold to-orange-600 rounded-lg flex items-center justify-center">
-              <span className="text-lg font-bold text-black">🙏</span>
+            <div className="w-10 h-10 bg-gradient-to-br from-saffron-200 to-saffron-300 rounded-lg flex items-center justify-center">
+              <span className="text-lg font-bold text-saffron-700">ॐ</span>
             </div>
             <div>
-              <h1 className="font-bold text-accent-gold text-base">Krishna-Arjun</h1>
-              <p className="text-gray-500 text-xs">Gita AI</p>
+              <h1 className="font-bold text-saffron-600 text-base">{t(language, 'app-title')}</h1>
+              <p className="text-slate-500 text-xs">3.0</p>
             </div>
           </div>
         </div>
@@ -181,18 +183,18 @@ export default function ChatInterface() {
         {/* New Chat Button */}
         <button
           onClick={createNewChat}
-          className="m-3 px-4 py-2 bg-accent-gold hover:bg-orange-600 text-black rounded-lg text-sm font-semibold transition flex items-center gap-2"
+          className="m-3 px-4 py-2 bg-saffron-500 hover:bg-saffron-600 text-white rounded-lg text-sm font-semibold transition flex items-center gap-2"
         >
-          <span>+</span> New Conversation
+          <span>+</span> {t(language, 'new-conversation')}
         </button>
 
         {/* Chat History */}
         <div className="flex-1 overflow-y-auto px-2">
-          <div className="text-xs font-semibold text-gray-500 px-3 py-2 uppercase tracking-wider">
-            History
+          <div className="text-xs font-semibold text-slate-600 px-3 py-2 uppercase tracking-wider">
+            {t(language, 'history')}
           </div>
           {chatSessions.length === 0 ? (
-            <div className="text-xs text-gray-600 text-center py-8">No conversations yet</div>
+            <div className="text-xs text-slate-500 text-center py-8">{t(language, 'no-conversations')}</div>
           ) : (
             <div className="space-y-1">
               {chatSessions.map((chat) => (
@@ -201,12 +203,16 @@ export default function ChatInterface() {
                   onClick={() => setCurrentChatId(chat.id)}
                   className={`group p-3 rounded-lg cursor-pointer transition ${
                     currentChatId === chat.id
-                      ? 'bg-accent-gold bg-opacity-20 border border-accent-gold'
-                      : 'hover:bg-slate-800'
+                      ? 'bg-gradient-to-r from-saffron-100 to-saffron-200 border border-saffron-300'
+                      : 'hover:bg-slate-100'
                   }`}
                 >
-                  <p className="text-sm truncate text-gray-200">{chat.title}</p>
-                  <p className="text-xs text-gray-600 mt-1">{chat.messages.length} messages</p>
+                  <p className={`text-sm truncate ${currentChatId === chat.id ? 'text-saffron-700 font-semibold' : 'text-slate-700'}`}>
+                    {chat.title}
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    {chat.messages.length} {t(language, 'messages')}
+                  </p>
                 </div>
               ))}
             </div>
@@ -214,8 +220,8 @@ export default function ChatInterface() {
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-accent-gold border-opacity-30 text-xs text-gray-500">
-          <p className="italic">
+        <div className="p-4 border-t border-slate-200 text-xs text-slate-600">
+          <p className="italic leading-relaxed">
             "Yoga is the journey of the self, through the self, to the self." - Bhagavad Gita
           </p>
         </div>
@@ -224,23 +230,38 @@ export default function ChatInterface() {
       {/* MAIN AREA */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <header className="bg-secondary-dark border-b border-accent-gold border-opacity-30 px-8 py-5 shadow-lg">
+        <header className="bg-white border-b border-slate-200 px-8 py-5 shadow-sm">
           <div className="flex justify-between items-center">
             <div>
-              <h2 className="text-2xl font-bold text-accent-gold">Krishna-Arjun Dialogue</h2>
-              <p className="text-gray-400 text-sm">Bhagavad Gita Voice & Text Assistant</p>
+              <h2 className="text-2xl font-bold text-saffron-600">{t(language, 'app-title')}</h2>
+              <p className="text-slate-500 text-sm">{t(language, 'app-subtitle')}</p>
             </div>
-            <button
-              onClick={createNewChat}
-              className="px-4 py-2 bg-accent-orange hover:bg-orange-600 text-white rounded-lg text-sm font-semibold transition"
-            >
-              Clear Chat
-            </button>
+            <div className="flex items-center gap-4">
+              <select
+                id="langSelect"
+                value={language}
+                onChange={(e) => setLanguage(e.target.value as Language)}
+                className="lang-select"
+                title="Change response language"
+              >
+                {LANGUAGES.map((lang) => (
+                  <option key={lang.code} value={lang.code}>
+                    {lang.label}
+                  </option>
+                ))}
+              </select>
+              <button
+                onClick={createNewChat}
+                className="px-4 py-2 bg-saffron-500 hover:bg-saffron-600 text-white rounded-lg text-sm font-semibold transition"
+              >
+                {t(language, 'clear-chat')}
+              </button>
+            </div>
           </div>
         </header>
 
         {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto px-8 py-8">
+        <div className="flex-1 overflow-y-auto px-8 py-8 bg-white">
           <div className="max-w-3xl mx-auto space-y-6">
             {messages.map((msg, index) => (
               <div
@@ -254,7 +275,7 @@ export default function ChatInterface() {
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                       msg.role === 'user'
-                        ? 'bg-gradient-to-br from-accent-gold to-orange-600'
+                        ? 'bg-gradient-to-br from-saffron-300 to-saffron-500'
                         : 'bg-gradient-to-br from-saffron-100 to-saffron-200'
                     }`}
                   >
@@ -267,21 +288,21 @@ export default function ChatInterface() {
                   <div className={msg.role === 'user' ? 'text-right' : ''}>
                     <p
                       className={`text-xs font-semibold mb-2 ${
-                        msg.role === 'user' ? 'text-accent-gold' : 'text-accent-gold'
+                        msg.role === 'user' ? 'text-saffron-600' : 'text-saffron-700'
                       }`}
                     >
-                      {msg.role === 'user' ? 'Arjun' : 'Krishna'}
+                      {msg.role === 'user' ? t(language, 'arjun') : t(language, 'krishna')}
                     </p>
                     <div
                       className={`px-5 py-3 rounded-lg ${
                         msg.role === 'user'
-                          ? 'bg-accent-gold text-black rounded-br-none'
-                          : 'bg-secondary-dark text-foreground border border-accent-gold border-opacity-40 rounded-bl-none'
+                          ? 'bg-saffron-500 text-white rounded-br-none'
+                          : 'bg-slate-100 text-slate-800 border border-slate-200 rounded-bl-none'
                       }`}
                     >
                       <p className="whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</p>
                     </div>
-                    <p className="text-xs text-gray-600 mt-2">
+                    <p className="text-xs text-slate-500 mt-2">
                       {msg.timestamp?.toLocaleTimeString()}
                     </p>
                   </div>
@@ -295,15 +316,15 @@ export default function ChatInterface() {
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-saffron-100 to-saffron-200 flex items-center justify-center flex-shrink-0">
                     <span className="text-sm">🙏</span>
                   </div>
-                  <div className="px-5 py-3 rounded-lg bg-secondary-dark border border-accent-gold border-opacity-40 rounded-bl-none">
-                    <p className="text-xs font-semibold text-accent-gold mb-3">
-                      Krishna is thinking...
+                  <div className="px-5 py-3 rounded-lg bg-slate-100 border border-slate-200 rounded-bl-none">
+                    <p className="text-xs font-semibold text-saffron-700 mb-3">
+                      {t(language, 'thinking')}
                     </p>
                     <div className="flex gap-2">
                       {[...Array(3)].map((_, i) => (
                         <div
                           key={i}
-                          className="w-2 h-2 bg-accent-gold rounded-full animate-pulse"
+                          className="w-2 h-2 bg-saffron-500 rounded-full animate-pulse"
                           style={{ animationDelay: `${i * 0.15}s` }}
                         />
                       ))}
@@ -315,7 +336,7 @@ export default function ChatInterface() {
 
             {error && (
               <div className="flex justify-center">
-                <div className="px-6 py-3 bg-red-900 bg-opacity-30 border border-red-500 rounded-lg text-red-400 text-sm">
+                <div className="px-6 py-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
                   ⚠️ {error}
                 </div>
               </div>
@@ -323,7 +344,7 @@ export default function ChatInterface() {
 
             {voiceError && (
               <div className="flex justify-center">
-                <div className="px-6 py-3 bg-yellow-900 bg-opacity-30 border border-yellow-500 rounded-lg text-yellow-400 text-sm">
+                <div className="px-6 py-3 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-700 text-sm">
                   🔊 {voiceError}
                 </div>
               </div>
@@ -334,7 +355,7 @@ export default function ChatInterface() {
         </div>
 
         {/* Input Area */}
-        <div className="bg-secondary-dark border-t border-accent-gold border-opacity-30 px-8 py-6">
+        <div className="bg-white border-t border-slate-200 px-8 py-6">
           <div className="max-w-3xl mx-auto flex flex-col gap-4">
             {/* Text Input */}
             <div className="flex gap-3">
@@ -347,32 +368,36 @@ export default function ChatInterface() {
                     handleUserMessage(inputValue)
                   }
                 }}
-                placeholder="Ask Krishna about duty, wisdom, action..."
+                placeholder={t(language, 'ask-placeholder')}
                 disabled={isLoading}
-                className="flex-1 px-5 py-3 bg-slate-900 border border-accent-gold border-opacity-40 rounded-lg text-foreground placeholder-gray-600 focus:outline-none focus:border-accent-gold transition"
+                className="flex-1 px-5 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-500 focus:outline-none focus:border-saffron-400 focus:ring-1 focus:ring-saffron-200 transition"
               />
               <button
                 onClick={() => handleUserMessage(inputValue)}
                 disabled={isLoading || !inputValue.trim()}
-                className="px-6 py-3 bg-accent-gold hover:bg-orange-600 disabled:bg-gray-700 text-black font-semibold rounded-lg transition"
+                className="px-6 py-3 bg-saffron-500 hover:bg-saffron-600 disabled:bg-slate-300 text-white font-semibold rounded-lg transition"
               >
-                Send
+                {t(language, 'send')}
               </button>
               {isSpeaking && (
                 <button
                   onClick={stopKrishnaVoice}
-                  className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition"
+                  className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition"
                 >
-                  Stop Voice
+                  {t(language, 'stop-voice')}
                 </button>
               )}
             </div>
 
             {/* Voice Input */}
             <div className="flex flex-col gap-3">
-              <VoiceInput onTranscript={handleUserMessage} disabled={isLoading} />
-              <p className="text-xs text-gray-500 text-center">
-                Speak your question or type above. Krishna will respond with Bhagavad Gita wisdom.
+              <VoiceInput 
+                onTranscript={handleUserMessage} 
+                disabled={isLoading}
+                language={language}
+              />
+              <p className="text-xs text-slate-500 text-center">
+                {t(language, 'ask-guidance')}
               </p>
             </div>
           </div>
